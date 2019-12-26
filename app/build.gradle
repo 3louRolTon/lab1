@@ -1,5 +1,10 @@
 apply plugin: 'com.android.application'
 
+def gitTag = 'git describe --tags --abbrev=0'.execute([], project.rootDir).text.trim()
+def gitCommitCount = Integer.parseInt('git rev-list --count master'.execute([], project.rootDir).text.trim())
+def gitCommitAfterTagCount = Integer.parseInt(('git rev-list ' + gitTag
+        + '..master --count').execute([], project.rootDir).text.trim())
+
 android {
     signingConfigs {
         config {
@@ -15,15 +20,14 @@ android {
         applicationId "com.example.lab1"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
+        versionCode gitCommitCount
+        versionName (gitTag + "." + gitCommitAfterTagCount)
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.PPOlab1ReleaseSigning
         }
     }
 }
